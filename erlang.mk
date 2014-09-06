@@ -566,7 +566,8 @@ CT_RUN = ct_run \
 	-noshell \
 	-pa $(realpath ebin) $(DEPS_DIR)/*/ebin \
 	-dir test \
-	-logdir logs
+	-logdir logs \
+	-spec ct.spec
 
 $(foreach dep,$(TEST_DEPS),$(eval $(call dep_target,$(dep))))
 
