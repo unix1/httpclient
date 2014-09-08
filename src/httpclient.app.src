@@ -10,6 +10,7 @@
                   public_key,
                   ssl,
                   inets,
+                  poolboy,
                   gun]},
   {mod, { httpclient, []}},
   {env, []}
