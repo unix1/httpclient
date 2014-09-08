@@ -6,6 +6,6 @@ The purpose of this guide is to introduce the user to the general usage of
 
 It consists of the following sections:
 
-# [Configuration](Configuration.md)
-# [Login handler](Login_Handler.md)
-# [Service handler](Service_Handler.md)
+## [Configuration](Configuration.md)
+## [Login handler](Login_Handler.md)
+## [Service handler](Service_Handler.md)
