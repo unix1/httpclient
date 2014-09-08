@@ -25,6 +25,11 @@ application:
     record via a service behavior; these requests will get executed by the
     workers in specified pool
 
+Usage
+-----
+
+Please see the [guide](guide/README.md).
+
 Notes
 -----
 
