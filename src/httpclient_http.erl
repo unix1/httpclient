@@ -66,14 +66,14 @@ build_query_string(undefined, Acc) ->
     Acc;
 build_query_string([], Acc) ->
     Acc;
-build_query_string([{Name, Value}|Rest], <<>>) ->
-    build_query_string(
-        Rest,
-        [urlencode(Name), <<"=">>, urlencode(Value)]);
-build_query_string([{Name, Value}|Rest], Acc) ->
-    build_query_string(
-        Rest,
-        [Acc, <<"&">>, urlencode(Name), <<"=">>, urlencode(Value)]).
+build_query_string([{Name, Value}|Rest], BasePath) ->
+    iolist_to_binary([
+        [BasePath, urlencode(Name), <<"=">>, urlencode(Value)]
+        | lists:foldr(
+            fun({N, V}, Acc) -> 
+              [<<"&">>|[[urlencode(N), <<"=">>, urlencode(V)]|Acc]] end,
+            [], Rest)
+      ]).
 
 urlencode(Input) when is_binary(Input) ->
     list_to_binary(http_uri:encode(binary_to_list(Input))).

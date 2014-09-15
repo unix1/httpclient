@@ -17,6 +17,8 @@
 -export([httpclient_req_new5/1]).
 -export([httpclient_req_add_header/1]).
 -export([httpclient_req_set/1]).
+-export([httpclient_http_init/1]).
+-export([httpclient_http_request/1]).
 
 %% ============================================================================
 %% ct functions
@@ -30,7 +32,9 @@ all() ->
       httpclient_req_new4,
       httpclient_req_new5,
       httpclient_req_add_header,
-      httpclient_req_set
+      httpclient_req_set,
+      httpclient_http_init,
+      httpclient_http_request
     ].
 
 init_per_suite(Config) ->
@@ -68,10 +72,7 @@ httpclient_conn_new(_) ->
     Sh = httpclient_conn:get_service_handler(Conn).
 
 httpclient_conn_set(_) ->
-    {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
-        {"https", "localhost", 8089, <<"admin">>, <<"changeme">>, default,
-         dummy_backend, dummy_login, dummy_service},
-    Conn = httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh),
+    Conn = httpclient_http_help_mock_conn(),
     {Backend, Token} = {"test_backend", "test_token"},
     Conn1 = httpclient_conn:set_token(Conn, Token),
     Conn2 = httpclient_conn:set_backend(Conn1, Backend),
@@ -133,3 +134,33 @@ httpclient_req_set(_) ->
     MethodNew = httpclient_req:get_method(Req4),
     PathNew = httpclient_req:get_path(Req4),
     ParamsNew = httpclient_req:get_params(Req4).
+
+httpclient_http_init(_) ->
+    {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
+        {"https", "localhost", 8089, <<"admin">>, <<"changeme">>, default,
+         httpclient_http_mock, dummy_login, dummy_service},
+    Conn = httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh),
+    {ok, [Pr, Ho, Po]} = httpclient_http:init(Conn).
+
+httpclient_http_request(_) ->
+    Conn = httpclient_http_help_mock_conn(),
+    State = {arbitrary, "State"},
+    {Method, Headers, Path, Params, Body} =
+        {get, [<<"foo">>, <<"bar">>], <<"/return/request">>,
+         [{<<"param1">>, <<"value1">>}, {<<"param2">>, <<"value2">>}],
+         <<"body original">>},
+    PathExpected = <<"/return/request?param1=value1&param2=value2">>,
+    Req = httpclient_req:new(Method, Headers, Path, Params, Body),
+    % verify response matches request
+    {ok, 200, Method, Headers, PathExpected, Body} =
+        httpclient_http:request(Conn, State, Req).
+
+%% ============================================================================
+%% Internal functions
+%% ============================================================================
+
+httpclient_http_help_mock_conn() ->
+    {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
+        {"https", "localhost", 8089, <<"admin">>, <<"changeme">>, default,
+         httpclient_http_mock, dummy_login, dummy_service},
+    httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh).
