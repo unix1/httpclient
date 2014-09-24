@@ -166,5 +166,5 @@ httpclient_http_request(_) ->
 httpclient_http_help_mock_conn() ->
     {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
         {?PROTOCOL, ?HOST, ?PORT, ?USER, ?PASS, ?POOL,
-         httpclient_http_mock, dummy_login, dummy_service},
+         ?BACKEND_HTTP, ?BACKEND_LOGIN, ?BACKEND_SERVICE},
     httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh).
