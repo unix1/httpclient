@@ -20,6 +20,16 @@
 -export([httpclient_http_init/1]).
 -export([httpclient_http_request/1]).
 
+-define(HOST, "localhost").
+-define(PROTOCOL, "https").
+-define(PORT, 8089).
+-define(USER, <<"admin">>).
+-define(PASS, <<"changeme">>).
+-define(POOL, default).
+-define(BACKEND_HTTP, httpclient_http_mock).
+-define(BACKEND_LOGIN, dummy_login).
+-define(BACKEND_SERVICE, dummy_service).
+
 %% ============================================================================
 %% ct functions
 %% ============================================================================
@@ -57,19 +67,16 @@ end_per_testcase(_, _Config) ->
 %% ============================================================================
 
 httpclient_conn_new(_) ->
-    {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
-        {"https", "localhost", 8089, <<"admin">>, <<"changeme">>, default,
-         dummy_backend, dummy_login, dummy_service},
-    Conn = httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh),
-    Pr = httpclient_conn:get_protocol(Conn),
-    Ho = httpclient_conn:get_host(Conn),
-    Po = httpclient_conn:get_port(Conn),
-    User = httpclient_conn:get_user(Conn),
-    Pass = httpclient_conn:get_pass(Conn),
-    Pool = httpclient_conn:get_pool(Conn),
-    Hb = httpclient_conn:get_backend(Conn),
-    Lh = httpclient_conn:get_login_handler(Conn),
-    Sh = httpclient_conn:get_service_handler(Conn).
+    Conn = httpclient_http_help_mock_conn(),
+    ?PROTOCOL = httpclient_conn:get_protocol(Conn),
+    ?HOST = httpclient_conn:get_host(Conn),
+    ?PORT = httpclient_conn:get_port(Conn),
+    ?USER = httpclient_conn:get_user(Conn),
+    ?PASS = httpclient_conn:get_pass(Conn),
+    ?POOL = httpclient_conn:get_pool(Conn),
+    ?BACKEND_HTTP = httpclient_conn:get_backend(Conn),
+    ?BACKEND_LOGIN = httpclient_conn:get_login_handler(Conn),
+    ?BACKEND_SERVICE = httpclient_conn:get_service_handler(Conn).
 
 httpclient_conn_set(_) ->
     Conn = httpclient_http_help_mock_conn(),
@@ -136,11 +143,8 @@ httpclient_req_set(_) ->
     ParamsNew = httpclient_req:get_params(Req4).
 
 httpclient_http_init(_) ->
-    {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
-        {"https", "localhost", 8089, <<"admin">>, <<"changeme">>, default,
-         httpclient_http_mock, dummy_login, dummy_service},
-    Conn = httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh),
-    {ok, [Pr, Ho, Po]} = httpclient_http:init(Conn).
+    Conn = httpclient_http_help_mock_conn(),
+    {ok, [?PROTOCOL, ?HOST, ?PORT]} = httpclient_http:init(Conn).
 
 httpclient_http_request(_) ->
     Conn = httpclient_http_help_mock_conn(),
@@ -161,6 +165,6 @@ httpclient_http_request(_) ->
 
 httpclient_http_help_mock_conn() ->
     {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
-        {"https", "localhost", 8089, <<"admin">>, <<"changeme">>, default,
+        {?PROTOCOL, ?HOST, ?PORT, ?USER, ?PASS, ?POOL,
          httpclient_http_mock, dummy_login, dummy_service},
     httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh).
