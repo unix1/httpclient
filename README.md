@@ -30,6 +30,11 @@ Usage
 
 Please see the [guide](guide/README.md).
 
+Supervision Tree
+----------------
+
+![simplified httpclient supervision tree](/guide/supervision-tree.png?raw=true)
+
 Notes
 -----
 
