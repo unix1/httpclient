@@ -18,9 +18,9 @@
 new(Method, Headers, Path) ->
     #httpclient_req{method = Method, headers = Headers, path = Path}.
 
-new(Method, Headers, Path, Body) ->
+new(Method, Headers, Path, Params) ->
     #httpclient_req{method = Method, headers = Headers, path = Path,
-                    body = Body}.
+                    params = Params}.
 
 new(Method, Headers, Path, Params, Body) ->
     #httpclient_req{method = Method, headers = Headers, path = Path,

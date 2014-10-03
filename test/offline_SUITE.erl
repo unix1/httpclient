@@ -18,7 +18,8 @@
 -export([httpclient_req_add_header/1]).
 -export([httpclient_req_set/1]).
 -export([httpclient_http_init/1]).
--export([httpclient_http_request/1]).
+-export([httpclient_http_request_bodyparams/1]).
+-export([httpclient_http_request_nobody/1]).
 
 -define(HOST, "localhost").
 -define(PROTOCOL, "https").
@@ -44,7 +45,8 @@ all() ->
       httpclient_req_add_header,
       httpclient_req_set,
       httpclient_http_init,
-      httpclient_http_request
+      httpclient_http_request_bodyparams,
+      httpclient_http_request_nobody
     ].
 
 init_per_suite(Config) ->
@@ -94,13 +96,14 @@ httpclient_req_new3(_) ->
     Path = httpclient_req:get_path(Req).
 
 httpclient_req_new4(_) ->
-    {Method, Headers, Path, Body} =
-        {get, [<<"foo">>, <<"bar">>], <<"/foo/bar">>, <<"test body">>},
-    Req = httpclient_req:new(Method, Headers, Path, Body),
+    {Method, Headers, Path, Params} =
+        {get, [<<"foo">>, <<"bar">>], <<"/foo/bar">>,
+         [{<<"param1">>, <<"value1">>}, {<<"param2">>, <<"value2">>}]},
+    Req = httpclient_req:new(Method, Headers, Path, Params),
     Method = httpclient_req:get_method(Req),
     Headers = httpclient_req:get_headers(Req),
     Path = httpclient_req:get_path(Req),
-    Body = httpclient_req:get_body(Req).
+    Params = httpclient_req:get_params(Req).
 
 httpclient_req_new5(_) ->
     {Method, Headers, Path, Params, Body} =
@@ -126,7 +129,7 @@ httpclient_req_add_header(_) ->
 
 httpclient_req_set(_) ->
     {Method, Headers, Path, Params, Body} =
-        {get, [<<"foo">>, <<"bar">>], <<"/foo/bar">>,
+        {post, [<<"foo">>, <<"bar">>], <<"/foo/bar">>,
          [{<<"param1">>, <<"value1">>}, {<<"param2">>, <<"value2">>}],
          <<"body original">>},
     Req = httpclient_req:new(Method, Headers, Path, Params, Body),
@@ -146,17 +149,29 @@ httpclient_http_init(_) ->
     Conn = httpclient_http_help_mock_conn(),
     {ok, [?PROTOCOL, ?HOST, ?PORT]} = httpclient_http:init(Conn).
 
-httpclient_http_request(_) ->
+httpclient_http_request_bodyparams(_) ->
     Conn = httpclient_http_help_mock_conn(),
     State = {arbitrary, "State"},
     {Method, Headers, Path, Params, Body} =
-        {get, [<<"foo">>, <<"bar">>], <<"/return/request">>,
+        {post, [<<"foo">>, <<"bar">>], <<"/return/request">>,
          [{<<"param1">>, <<"value1">>}, {<<"param2">>, <<"value2">>}],
          <<"body original">>},
     PathExpected = <<"/return/request?param1=value1&param2=value2">>,
     Req = httpclient_req:new(Method, Headers, Path, Params, Body),
     % verify response matches request
     {ok, 200, Method, Headers, PathExpected, Body} =
+        httpclient_http:request(Conn, State, Req).
+
+httpclient_http_request_nobody(_) ->
+    Conn = httpclient_http_help_mock_conn(),
+    State = {arbitrary, "State"},
+    {Method, Headers, Path, Params} =
+        {post, [<<"foo">>, <<"bar">>], <<"/return/request">>,
+         [{<<"param1">>, <<"value1">>}, {<<"param2">>, <<"value2">>}]},
+    PathExpected = <<"/return/request?param1=value1&param2=value2">>,
+    Req = httpclient_req:new(Method, Headers, Path, Params),
+    % verify response matches request
+    {ok, 200, Method, Headers, PathExpected, <<>>} =
         httpclient_http:request(Conn, State, Req).
 
 %% ============================================================================
