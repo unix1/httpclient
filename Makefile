@@ -9,7 +9,7 @@ CT_SUITES = offline
 
 DEPS = poolboy gun
 dep_poolboy = git https://github.com/devinus/poolboy.git 1.2.0
-dep_gun = git https://github.com/unix1/gun.git fix-body-no-contentlength
+dep_gun = git https://github.com/unix1/gun.git fix-iofromheaders-temp
 
 # Standard targets
 
