@@ -23,9 +23,9 @@
 
 -define(HOST, "localhost").
 -define(PROTOCOL, "https").
--define(PORT, 8089).
--define(USER, <<"admin">>).
--define(PASS, <<"changeme">>).
+-define(PORT, 443).
+-define(USER, <<>>).
+-define(PASS, <<>>).
 -define(POOL, default).
 -define(BACKEND_HTTP, httpclient_http_mock).
 -define(BACKEND_LOGIN, dummy_login).
