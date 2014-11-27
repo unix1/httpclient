@@ -54,10 +54,8 @@ stop() ->
     ok.
 
 start_pool(ConnectionsConfig, PoolConfig) ->
-    F = fun({Name, [{protocol, Pr}, {host, H}, {port, Po}, {user, U},
-            {pass, Pa}, {pool, Pl}, {http_backend, Hb},
-            {login_handler, Lh}, {service_handler, Sh}]}) ->
-        {Name, httpclient_conn:new(Pr, H, Po, U, Pa, Pl, Hb, Lh, Sh)}
+    F = fun({Name, Config}) ->
+        {Name, httpclient_conn:new(Config)}
     end,
     Connections = lists:map(F, ConnectionsConfig),
     ok = httpclient_sup:start_pool(Connections, PoolConfig).

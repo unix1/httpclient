@@ -5,7 +5,7 @@
                            http_backend, login_handler, service_handler}).
 
 %% User functions
--export([new/9]).
+-export([new/1]).
 -export([get_backend/1]).
 -export([get_host/1]).
 -export([get_login_handler/1]).
@@ -22,12 +22,17 @@
 %% ============================================================================
 %% User functions
 %% ============================================================================
-
-new(Protocol, Host, Port, User, Pass, Pool, HttpBackend, LoginHandler,
-    ServiceHandler) ->
-    #httpclient_conn{protocol = Protocol, host = Host, port = Port,
-        user = User, pass = Pass, pool = Pool, http_backend = HttpBackend,
-        login_handler = LoginHandler, service_handler = ServiceHandler}.
+new(Config) ->
+    F = fun({protocol, Value}, Conn) -> Conn#httpclient_conn{protocol = Value};
+           ({host, Value}, Conn) -> Conn#httpclient_conn{host = Value};
+           ({port, Value}, Conn) -> Conn#httpclient_conn{port = Value};
+           ({user, Value}, Conn) -> Conn#httpclient_conn{user = Value};
+           ({pass, Value}, Conn) -> Conn#httpclient_conn{pass = Value};
+           ({pool, Value}, Conn) -> Conn#httpclient_conn{pool = Value};
+           ({http_backend, Value}, Conn) -> Conn#httpclient_conn{http_backend = Value};
+           ({login_handler, Value}, Conn) -> Conn#httpclient_conn{login_handler = Value};
+           ({service_handler, Value}, Conn) -> Conn#httpclient_conn{service_handler = Value} end,
+    lists:foldl(F, #httpclient_conn{}, Config).
 
 get_backend(Conn) ->
     Conn#httpclient_conn.http_backend.

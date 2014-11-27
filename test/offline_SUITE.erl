@@ -179,7 +179,13 @@ httpclient_http_request_nobody(_) ->
 %% ============================================================================
 
 httpclient_http_help_mock_conn() ->
-    {Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh} =
-        {?PROTOCOL, ?HOST, ?PORT, ?USER, ?PASS, ?POOL,
-         ?BACKEND_HTTP, ?BACKEND_LOGIN, ?BACKEND_SERVICE},
-    httpclient_conn:new(Pr, Ho, Po, User, Pass, Pool, Hb, Lh, Sh).
+    Config = [{protocol, ?PROTOCOL},
+              {host, ?HOST},
+              {port, ?PORT},
+              {user, ?USER},
+              {pass, ?PASS},
+              {pool, ?POOL},
+              {http_backend, ?BACKEND_HTTP},
+              {login_handler, ?BACKEND_LOGIN},
+              {service_handler, ?BACKEND_SERVICE}],
+    httpclient_conn:new(Config).
