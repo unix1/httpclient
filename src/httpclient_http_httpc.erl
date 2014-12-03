@@ -5,7 +5,7 @@
 -behaviour(httpclient_http_handler).
 
 %% Behavior callbacks
--export([init/3]).
+-export([init/4]).
 -export([terminate/1]).
 -export([send_request/2]).
 
@@ -13,7 +13,7 @@
 %% Behavior callbacks
 %% ============================================================================
 
-init(_Protocol, _Host, _Port) ->
+init(_Protocol, _Host, _Port, _Options) ->
     {ok, 0}.
 
 send_request(_State, #httpclient_http{method = Method,

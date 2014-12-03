@@ -28,6 +28,7 @@
 -define(PASS, <<>>).
 -define(POOL, default).
 -define(BACKEND_HTTP, httpclient_http_mock).
+-define(BACKEND_OPTIONS, [{foo, <<"bar">>}]).
 -define(BACKEND_LOGIN, dummy_login).
 -define(BACKEND_SERVICE, dummy_service).
 
@@ -147,7 +148,7 @@ httpclient_req_set(_) ->
 
 httpclient_http_init(_) ->
     Conn = httpclient_http_help_mock_conn(),
-    {ok, [?PROTOCOL, ?HOST, ?PORT]} = httpclient_http:init(Conn).
+    {ok, [?PROTOCOL, ?HOST, ?PORT, ?BACKEND_OPTIONS]} = httpclient_http:init(Conn).
 
 httpclient_http_request_bodyparams(_) ->
     Conn = httpclient_http_help_mock_conn(),
@@ -186,6 +187,7 @@ httpclient_http_help_mock_conn() ->
               {pass, ?PASS},
               {pool, ?POOL},
               {http_backend, ?BACKEND_HTTP},
+              {http_backend_options, ?BACKEND_OPTIONS},
               {login_handler, ?BACKEND_LOGIN},
               {service_handler, ?BACKEND_SERVICE}],
     httpclient_conn:new(Config).

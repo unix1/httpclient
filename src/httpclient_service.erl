@@ -32,10 +32,12 @@ init([Config]) ->
     gen_event:add_handler(httpclient_service_eventman, HandlerId, [self()]),
     ConnectionName = proplists:get_value(connection, Config),
     HttpBackend = proplists:get_value(http_backend, Config),
+    HttpBackendOptions = proplists:get_value(http_backend_options, Config),
     Conn1 = httpclient_login:get_connection(ConnectionName),
     % override default connection http backend from service pool configuration
     Conn2 = httpclient_conn:set_backend(Conn1, HttpBackend),
-    {ok, HttpState} = httpclient_http:init(Conn2),
+    Conn3 = httpclient_conn:set_backend_options(Conn2, HttpBackendOptions),
+    {ok, HttpState} = httpclient_http:init(Conn3),
     S = #state{connection = Conn2, event_handler_id = HandlerId,
         http_state = HttpState},
     {ok, S}.

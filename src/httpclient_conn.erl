@@ -2,11 +2,13 @@
 
 %% connection record
 -record (httpclient_conn, {protocol, host, port, user, pass, token, pool,
-                           http_backend, login_handler, service_handler}).
+                           http_backend, http_backend_options, login_handler,
+                           service_handler}).
 
 %% User functions
 -export([new/1]).
 -export([get_backend/1]).
+-export([get_backend_options/1]).
 -export([get_host/1]).
 -export([get_login_handler/1]).
 -export([get_pass/1]).
@@ -17,6 +19,7 @@
 -export([get_token/1]).
 -export([get_user/1]).
 -export([set_backend/2]).
+-export([set_backend_options/2]).
 -export([set_token/2]).
 
 %% ============================================================================
@@ -30,12 +33,16 @@ new(Config) ->
            ({pass, Value}, Conn) -> Conn#httpclient_conn{pass = Value};
            ({pool, Value}, Conn) -> Conn#httpclient_conn{pool = Value};
            ({http_backend, Value}, Conn) -> Conn#httpclient_conn{http_backend = Value};
+           ({http_backend_options, Value}, Conn) -> Conn#httpclient_conn{http_backend_options = Value};
            ({login_handler, Value}, Conn) -> Conn#httpclient_conn{login_handler = Value};
            ({service_handler, Value}, Conn) -> Conn#httpclient_conn{service_handler = Value} end,
     lists:foldl(F, #httpclient_conn{}, Config).
 
 get_backend(Conn) ->
     Conn#httpclient_conn.http_backend.
+
+get_backend_options(Conn) ->
+    Conn#httpclient_conn.http_backend_options.
 
 get_host(Conn) ->
     Conn#httpclient_conn.host.
@@ -66,6 +73,9 @@ get_user(Conn) ->
 
 set_backend(Conn, Backend) ->
     Conn#httpclient_conn{http_backend = Backend}.
+
+set_backend_options(Conn, Options) ->
+    Conn#httpclient_conn{http_backend_options = Options}.
 
 set_token(Conn, Token) ->
     Conn#httpclient_conn{token = Token}.

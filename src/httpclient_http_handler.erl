@@ -2,7 +2,8 @@
 
 -callback init(Protocol :: string(),
                Host :: string(),
-               Port :: non_neg_integer()) ->
+               Port :: non_neg_integer(),
+               Options :: list(tuple())) ->
     tuple('ok', State :: term()) | tuple('error', Reason :: string()).
 
 -callback terminate(Args :: list(term())) ->

@@ -17,7 +17,8 @@ init(Conn) ->
     Protocol = httpclient_conn:get_protocol(Conn),
     Host = httpclient_conn:get_host(Conn),
     Port = httpclient_conn:get_port(Conn),
-    {ok, _State} = Backend:init(Protocol, Host, Port).
+    Options = httpclient_conn:get_backend_options(Conn),
+    {ok, _State} = Backend:init(Protocol, Host, Port, Options).
 
 request(Conn, State, Req) ->
     Request = combine_request(Conn, Req),

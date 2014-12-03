@@ -5,12 +5,12 @@
 -behaviour(httpclient_http_handler).
 
 %% Behavior callbacks
--export([init/3]).
+-export([init/4]).
 -export([send_request/2]).
 -export([terminate/1]).
 
-init(Protocol, Host, Port) ->
-    S = [Protocol, Host, Port],
+init(Protocol, Host, Port, Options) ->
+    S = [Protocol, Host, Port, Options],
     {ok, S}.
 
 send_request(_State, #httpclient_http{

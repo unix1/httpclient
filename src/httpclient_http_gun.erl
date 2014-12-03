@@ -5,7 +5,7 @@
 -behaviour(httpclient_http_handler).
 
 %% Behavior callbacks
--export([init/3]).
+-export([init/4]).
 -export([terminate/1]).
 -export([send_request/2]).
 
@@ -15,9 +15,9 @@
 %% Behavior callbacks
 %% ============================================================================
 
-init(Protocol, Host, Port) ->
+init(Protocol, Host, Port, Options) ->
     Type = if Protocol =:= "https" -> ssl; true -> tcp end,
-    Opts = [{type, Type}, {keepalive, 500}, {retry_timeout, 500}],
+    Opts = [{type, Type} | Options],
     {ok, Pid} = gun:open(Host, Port, Opts),
     Mref = monitor(process, Pid),
     S = #state{pid = Pid, mref = Mref},
