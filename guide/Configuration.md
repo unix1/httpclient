@@ -23,6 +23,7 @@ Below is an example of what you would normally keep in your application:
        {pass, <<"my_pass">>},
        {pool, my_pool},                     % service pool for this connection
        {http_backend, httpclient_http_gun}, % backend for login service
+       {http_backend_options, []},          % backend specific options, leave blank for defaults
        {login_handler, my_app_login},       % authentication implementation
        {service_handler, my_app_service}    % service implementation
        ]}]},
@@ -33,7 +34,8 @@ Below is an example of what you would normally keep in your application:
           {max_overflow, 0}], % max # of workers created if pool is empty
         [ % worker args
           {connection, default}, % specifies which connection this pool maps to
-          {http_backend, httpclient_http_gun} % backend for service workers
+          {http_backend, httpclient_http_gun}, % backend for service workers
+          {http_backend_options, []} % backend specific options
         ]}]}
   ]
 }].
@@ -49,6 +51,8 @@ holds the following:
     the authentication token to all pool members
 * `http_backend`: what HTTP client to use; see note about what HTTP clients are
     currently available
+* `http_backend_options`: options to pass through to the HTTP backend of choice;
+    this is typically a proplist; leave as an empty list for defaults
 * `login_handler`: name of the login handler of your application, in the above
     example `my_app_login`; this module should implement the
     `httpclient_login_handler` behavior and the specified `login` function;
