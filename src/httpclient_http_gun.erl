@@ -15,72 +15,46 @@
 %% Behavior callbacks
 %% ============================================================================
 
+init(Protocol, Host, Port, undefined) ->
+    init(Protocol, Host, Port, #{});
 init(Protocol, Host, Port, Options) ->
-    Type = if Protocol =:= "https" -> ssl; true -> tcp end,
-    Opts = [{type, Type} | Options],
+    Transport = if Protocol =:= "https" -> ssl; true -> tcp end,
+    Opts = Options#{protocols => [http], transport => Transport},
     {ok, Pid} = gun:open(Host, Port, Opts),
-    Mref = monitor(process, Pid),
-    S = #state{pid = Pid, mref = Mref},
+    link(Pid),
+    S = #state{pid = Pid},
     {ok, S}.
 
-send_request(#state{pid = Pid, mref = Mref}, #httpclient_http{method = get,
-                                                   protocol = _Protocol,
-                                                   host = _Host,
-                                                   port = _Port,
-                                                   path = Path,
-                                                   body = <<>>,
-                                                   headers = Headers}) ->
-    ok = receive_down(Pid, Mref),
+send_request(#state{pid = Pid}, #httpclient_http{method = get,
+                                                 protocol = _Protocol,
+                                                 host = _Host,
+                                                 port = _Port,
+                                                 path = Path,
+                                                 body = <<>>,
+                                                 headers = Headers}) ->
     StreamRef = gun:get(Pid, Path, Headers),
-    {ok, _Status, _Headers, _Body} = receive_data(Pid, Mref, StreamRef);
-send_request(#state{pid = Pid, mref = Mref}, #httpclient_http{method = Method,
-                                                   protocol = _Protocol,
-                                                   host = _Host,
-                                                   port = _Port,
-                                                   path = Path,
-                                                   body = Body,
-                                                   headers = Headers}) ->
-    ok = receive_down(Pid, Mref),
+    {ok, Status, ResponseHeaders, ResponseBody} = await(Pid, StreamRef),
+    gun:flush(Pid),
+    {ok, Status, ResponseHeaders, ResponseBody};
+send_request(#state{pid = Pid}, #httpclient_http{method = Method,
+                                                 protocol = _Protocol,
+                                                 host = _Host,
+                                                 port = _Port,
+                                                 path = Path,
+                                                 body = Body,
+                                                 headers = Headers}) ->
     StreamRef = gun:Method(Pid, Path, Headers, Body),
-    {ok, _Status, _Headers, _Body} = receive_data(Pid, Mref, StreamRef).
+    {ok, Status, ResponseHeaders, ResponseBody} = await(Pid, StreamRef),
+    gun:flush(Pid),
+    {ok, Status, ResponseHeaders, ResponseBody}.
 
-receive_data(Pid, Mref, StreamRef) ->
-    receive
-        {'DOWN', Mref, process, Pid, Reason} ->
-            {error, incomplete, Reason};
-        {gun_response, Pid, StreamRef, fin, Status, Headers} ->
+await(Pid, StreamRef) ->
+    case gun:await(Pid, StreamRef) of
+        {response, fin, Status, Headers} ->
             {ok, Status, Headers, <<>>};
-        {gun_response, Pid, StreamRef, nofin, Status, Headers} ->
-            {ok, ResponseBody} = receive_data_loop(Pid, Mref, StreamRef, <<>>),
-            {ok, Status, Headers, ResponseBody};
-        Other ->
-            io:format("gun process got message: ~s~n", [Other])
-    after 5000 ->
-        {error, timeout}
-    end.
-
-receive_data_loop(Pid, Mref, StreamRef, Acc) ->
-    receive
-        {'DOWN', Mref, process, Pid, Reason} ->
-            {error, incomplete, Reason};
-        {gun_data, Pid, StreamRef, nofin, Data} ->
-            receive_data_loop(Pid, Mref, StreamRef, [Acc, Data]);
-        {gun_data, Pid, StreamRef, fin, Data} ->
-            {ok, iolist_to_binary([Acc, Data])};
-        Other ->
-            io:format("gun process got message: ~s~n", [Other])
-    after 5000 ->
-        {error, timeout}
-    end.
-
-receive_down(Pid, Mref) ->
-    receive
-        {'DOWN', Mref, process, Pid, Reason} ->
-            {error, Reason};
-        Other ->
-            {error, Other}
-    after 0 ->
-        ok
+        {response, nofin, Status, Headers} ->
+            {ok, Body} = gun:await_body(Pid, StreamRef),
+            {ok, Status, Headers, Body}
     end.
 
 terminate(S) ->
