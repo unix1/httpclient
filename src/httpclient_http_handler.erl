@@ -4,11 +4,11 @@
                Host :: string(),
                Port :: non_neg_integer(),
                Options :: list(tuple())) ->
-    tuple('ok', State :: term()) | tuple('error', Reason :: string()).
+    {'ok', State :: term()} | {'error', Reason :: string()}.
 
 -callback terminate(Args :: list(term())) ->
-    'ok'|tuple('error', Reason :: string()).
+    'ok'|{'error', Reason :: string()}.
 
 -callback send_request(State :: term(),
                        Request :: term()) ->
-    tuple('ok', ResponseBody :: string() | tuple('error', ErrorReason :: string())).
+    {'ok', ResponseBody :: string()} | {'error', ErrorReason :: string()}.
