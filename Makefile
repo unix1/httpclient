@@ -8,7 +8,7 @@ CT_SUITES = offline
 # Dependencies
 
 DEPS = poolboy gun
-dep_poolboy = git https://github.com/devinus/poolboy.git 1.2.0
+dep_poolboy = git https://github.com/devinus/poolboy.git 1.5.2
 dep_gun = git https://github.com/unix1/gun.git
 
 # Standard targets
