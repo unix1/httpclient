@@ -4,6 +4,7 @@
 *.iml
 *.kdev4
 *.plt
+_build
 deps
 ebin/test
 ebin/*.beam
