@@ -12,6 +12,6 @@
                   inets,
                   poolboy,
                   gun]},
-  {mod, { httpclient, []}},
+  {mod, { httpclient_app, []}},
   {env, []}
  ]}.

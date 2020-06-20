@@ -1,27 +1,11 @@
 -module(httpclient).
 
--behaviour(application).
-
-%% Behavior callbacks
--export([start/2]).
--export([stop/1]).
-
 %% User functions
 -export([start/0]).
 -export([stop/0]).
 -export([start_pool/2]).
 -export([stop_pool/1]).
 -export([request/2, request/3]).
-
-%% ============================================================================
-%% Behavior callbacks
-%% ============================================================================
-
-start(_StartType, _StartArgs) ->
-    httpclient_sup:start_link().
-
-stop(_State) ->
-    ok.
 
 %% ============================================================================
 %% User functions
