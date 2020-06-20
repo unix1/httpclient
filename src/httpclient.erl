@@ -1,8 +1,6 @@
 -module(httpclient).
 
 %% User functions
--export([start/0]).
--export([stop/0]).
 -export([start_pool/2]).
 -export([stop_pool/1]).
 -export([request/2, request/3]).
@@ -10,30 +8,6 @@
 %% ============================================================================
 %% User functions
 %% ============================================================================
-
-start() ->
-    ok = application:ensure_started(crypto),
-    ok = application:ensure_started(cowlib),
-    ok = application:ensure_started(asn1),
-    ok = application:ensure_started(public_key),
-    ok = application:ensure_started(ssl),
-    ok = application:ensure_started(inets),
-    ok = application:ensure_started(poolboy),
-    ok = application:ensure_started(gun),
-    ok = application:ensure_started(httpclient),
-    ok.
-
-stop() ->
-    ok = application:stop(httpclient),
-    ok = application:stop(gun),
-    ok = application:stop(poolboy),
-    ok = application:stop(inets),
-    ok = application:stop(ssl),
-    ok = application:stop(public_key),
-    ok = application:stop(asn1),
-    ok = application:stop(cowlib),
-    ok = application:stop(crypto),
-    ok.
 
 start_pool(ConnectionsConfig, PoolConfig) ->
     F = fun({Name, Config}) ->

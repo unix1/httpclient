@@ -51,12 +51,11 @@ all() ->
     ].
 
 init_per_suite(Config) ->
-    ok = application:load(httpclient),
-    ok = httpclient:start(),
+    {ok, _} = application:ensure_all_started(httpclient),
     Config.
 
 end_per_suite(_) ->
-    application:stop(httpclient),
+    ok = application:stop(httpclient),
     ok.
 
 init_per_testcase(_, Config) ->
