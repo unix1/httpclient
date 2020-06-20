@@ -28,7 +28,6 @@ stop(_State) ->
 %% ============================================================================
 
 start() ->
-    ok = application:ensure_started(ranch),
     ok = application:ensure_started(crypto),
     ok = application:ensure_started(cowlib),
     ok = application:ensure_started(asn1),
@@ -50,7 +49,6 @@ stop() ->
     ok = application:stop(asn1),
     ok = application:stop(cowlib),
     ok = application:stop(crypto),
-    ok = application:stop(ranch),
     ok.
 
 start_pool(ConnectionsConfig, PoolConfig) ->

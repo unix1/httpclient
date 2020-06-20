@@ -1,16 +1,27 @@
-PROJECT = httpclient
+REBAR3 = rebar3
 
-# Options
+all:
+	@$(REBAR3) do clean, compile, ct, dialyzer
 
-COMPILE_FIRST = httpclient_http_handler
-CT_SUITES = offline
+compile:
+	@$(REBAR3) compile
 
-# Dependencies
+dialyze:
+	@$(REBAR3) dialyzer
 
-DEPS = poolboy gun
-dep_poolboy = git https://github.com/devinus/poolboy.git 1.5.2
-dep_gun = git https://github.com/unix1/gun.git
+deps:
+	@$(REBAR3) get-deps
 
-# Standard targets
+rel: all
+	@$(REBAR3) release
 
-include erlang.mk
+run:
+	@$(REBAR3) shell
+
+doc:
+	@$(REBAR3) edoc
+
+tests:
+	@$(REBAR3) ct --logdir logs/ct
+
+.PHONY: all compile dialyze deps rel run doc tests

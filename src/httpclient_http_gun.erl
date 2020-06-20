@@ -18,7 +18,7 @@
 init(Protocol, Host, Port, undefined) ->
     init(Protocol, Host, Port, #{});
 init(Protocol, Host, Port, Options) ->
-    Transport = if Protocol =:= "https" -> ssl; true -> tcp end,
+    Transport = if Protocol =:= "https" -> tls; true -> tcp end,
     Opts = Options#{protocols => [http], transport => Transport},
     {ok, Pid} = gun:open(Host, Port, Opts),
     link(Pid),
