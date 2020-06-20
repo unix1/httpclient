@@ -1,6 +1,6 @@
 {application, httpclient,
  [{description, "HTTP Client Pool in Erlang/OTP"},
-  {vsn, "1.0.0"},
+  {vsn, "0.2.0"},
   {modules, []},
   {registered, []},
   {applications, [kernel,
@@ -12,6 +12,6 @@
                   inets,
                   poolboy,
                   gun]},
-  {mod, { httpclient_app, []}},
+  {mod, {httpclient_app, []}},
   {env, []}
  ]}.
